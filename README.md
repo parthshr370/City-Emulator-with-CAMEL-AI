@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-The City Emulator is an AI-powered platform leveraging Camel AI to simulate and aggregate real-time data for smart city management. The system integrates multiple agents to collect, analyze, and summarize city-specific data, including citizen feedback, traffic conditions, and environmental updates.
+The City Emulator is an AI-powered platform leveraging Camel AI to simulate and aggregate real-time data for smart city management. The system integrates multiple agents to collect, analyze, and summarize city-specific data, including **citizen feedback**, **traffic conditions**, and **environmental updates**.
 
 ## Project Structure
 
