@@ -2,17 +2,16 @@ from camel.agents.chat_agent import ChatAgent
 from camel.messages.base import BaseMessage
 from camel.models import ModelFactory
 from camel.types import ModelPlatformType
-
 from config import OPEN_ROUTER_API_KEY
 from tools.traffic_tool import TrafficToolWrapper
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-
 class TrafficAgent:
-    def __init__(self):
-        self.model = ModelFactory(
+    def __init__(self, city):
+        self.city = city
+        self.model = ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
             api_key=OPEN_ROUTER_API_KEY,
             model_type="google/gemini-2.0-flash-001",
@@ -22,7 +21,7 @@ class TrafficAgent:
 
         sys_msg = BaseMessage.make_assistant_message(
             role_name="Traffic Agent",
-            content="You analyze current traffic conditions and congestion in the city.",
+            content=f"You analyze current traffic conditions and congestion in the city {self.city}.",
         )
 
         self.traffic_tool = TrafficToolWrapper()
@@ -33,7 +32,7 @@ class TrafficAgent:
         )
 
     def get_traffic_status(self):
-        prompt = "What is the current traffic congestion status in the main downtown corridors?"
-        response = self.agent.send_and_await_response(prompt)
+        prompt = f"What is the current traffic congestion status in {self.city}?"
+        response = self.agent.step(prompt)
         logger.info("TrafficAgent response: %s", response)
         return {"traffic_status": response}

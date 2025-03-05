@@ -12,18 +12,19 @@ logger = get_logger(__name__)
 
 
 class EnvironmentAgent:
-    def __init__(self):
-        self.model = ModelFactory(
+    def __init__(self, city):
+        self.city = city
+        self.model = ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type=ModelType.GPT3,
             api_key=OPEN_ROUTER_API_KEY,
+            model_type="google/gemini-2.0-flash-001",
             url="https://openrouter.ai/api/v1",
-            model_config=ChatGPTConfig(temperature=0.4, max_tokens=4096),
+            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
         )
 
         sys_msg = BaseMessage.make_assistant_message(
             role_name="Environment Agent",
-            content="You provide real-time weather and enviornmental updates.",
+            content=f"You provide real-time weather and environmental updates for {self.city}.",
         )
 
         self.weather_tool = WeatherToolWrapper()
@@ -32,11 +33,10 @@ class EnvironmentAgent:
             model=self.model,
             tools=[self.weather_tool.get_tool()],
         )
-        logger.info("EnvironmentAgent initialized.")
+        logger.info("Environment Agent initialized for city: %s", self.city)
 
-    def get_weather_update(self):
-        prompt = "Provide the latest weather update and any notable environmental alerts for the city with the best possible accuracy."
-        response = self.agent.send_and_await_response(prompt)
-        logger.info(f"EnvironmentAgent response: {response}")
-
-        return {"weather_update": response}
+    def get_environment_update(self):
+        prompt = f"Provide the latest weather update and any notable environmental alerts for {self.city}."
+        response = self.agent.step(prompt)
+        logger.info("Environment update: %s", response)
+        return {"environment_update": response}
